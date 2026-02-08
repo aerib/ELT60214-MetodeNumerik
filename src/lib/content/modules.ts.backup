@@ -1,0 +1,1908 @@
+// Course modules and lessons content
+
+import type { Module, Lesson, InteractiveExample } from './types';
+
+// Module 1: Pendahuluan & Analisis Galat
+const module1Lessons: Lesson[] = [
+  {
+    id: 'module-1-lesson-1',
+    moduleId: 'module-1',
+    title: 'Pendahuluan Metode Numerik',
+    titleEn: 'Introduction to Numerical Methods',
+    order: 1,
+    objectives: [
+      'Memahami apa itu metode numerik dan kepentingannya',
+      'Mengidentifikasi aplikasi metode numerik dalam teknik elektro',
+      'Menjelaskan perbedaan antara metode analitik dan numerik',
+    ],
+    content: `
+## Apa itu Metode Numerik?
+
+Metode numerik adalah teknik matematis untuk memecahkan masalah dengan pendekatan komputasi menggunakan pendekatan numerik (angka) daripada simbolik. Metode ini sangat penting ketika:
+
+1. **Solusi analitik tidak tersedia** atau terlalu kompleks
+2. **Masalah non-linear** yang sulit diselesaikan secara manual
+3. **Sistem besar** dengan banyak variabel
+4. **Simulasi** untuk memprediksi perilaku sistem
+
+## Mengapa Belajar Metode Numerik?
+
+Dalam teknik elektro, metode numerik digunakan secara luas untuk:
+
+- **Analisis rangkaian** - Menyelesaikan rangkaian kompleks
+- **Sistem daya** - Analisis aliran daya (power flow)
+- **Kontrol** - Desain pengendali sistem
+- **Pemrosesan sinyal** - Filter dan transformasi
+- **Elektromagnetik** - Simulasi medan elektromagnetik
+
+## Perbedaan Analitik vs Numerik
+
+| Aspek | Metode Analitik | Metode Numerik |
+|-------|----------------|----------------|
+| Solusi | Tepat (exact) | Pendekatan (approximate) |
+| Kompleksitas | Sederhana | Kompleks |
+| Waktu | Cepat | Membutuhkan komputasi |
+| Aplikasi | Masalah sederhana | Masalah nyata/realistis |
+    `,
+    examples: [
+      {
+        id: 'example-1-1',
+        title: 'Contoh Sederhana: Menghitung Akar Kuadrat',
+        description: 'Contoh perbandingan antara metode analitik dan numerik',
+        initialCode: `import numpy as np
+import matplotlib.pyplot as plt
+
+# Metode Analitik: Menggunakan fungsi sqrt
+x_analitik = np.sqrt(2)
+print(f"Solusi Analitik: √2 = {x_analitik:.10f}")
+
+# Metode Numerik: Newton-Raphson untuk mencari √2
+def akar_kuadrat_newton(S, n_iterasi=10):
+    """Mencari √S menggunakan metode Newton-Raphson"""
+    x = S / 2  # Tebakan awal
+    for i in range(n_iterasi):
+        x = 0.5 * (x + S / x)
+        print(f"Iterasi {i+1}: x = {x:.10f}")
+    return x
+
+x_numerik = akar_kuadrat_newton(2)
+print(f"\\nSolusi Numerik: √2 ≈ {x_numerik:.10f}")
+print(f"Error: {abs(x_analitik - x_numerik):.2e}")`,
+        expectedOutput: 'Solusi Analitik: √2 = 1.4142135624',
+        hints: ['Perhatikan bagaimana setiap iterasi mendekati nilai √2 yang sebenarnya'],
+      },
+    ],
+  },
+  {
+    id: 'module-1-lesson-2',
+    moduleId: 'module-1',
+    title: 'Representasi Floating-Point & Galat',
+    titleEn: 'Floating-Point Representation & Errors',
+    order: 2,
+    objectives: [
+      'Memahami representasi floating-point dalam komputer',
+      'Mengidentifikasi sumber-sumber galat dalam komputasi numerik',
+      'Menghitung galat absolut dan relatif',
+    ],
+    content: `
+## Representasi Floating-Point
+
+Komputer menggunakan sistem binary (basis 2) untuk menyimpan angka, sedangkan kita menggunakan sistem desimal (basis 10). Ini menyebabkan beberapa angka desimal tidak dapat direpresentasikan secara tepat.
+
+### IEEE 754 Standard
+
+Standar IEEE 754 mendefinisikan bagaimana floating-point disimpan:
+- **Single precision** (32 bit): 1 bit sign, 8 bit exponent, 23 bit mantissa
+- **Double precision** (64 bit): 1 bit sign, 11 bit exponent, 52 bit mantissa
+
+### Machine Epsilon
+
+Machine epsilon (ε) adalah selisih terkecil antara 1.0 dan bilangan floating-point terbesar berikutnya.
+
+\`\`\`python
+import sys
+eps = sys.float_info.epsilon
+print(f"Machine epsilon: {eps}")
+\`\`\`
+
+## Jenis-Jenis Galat
+
+### 1. Galat Pembulatan (Round-off Error)
+Disebabkan oleh keterbatasan presisi floating-point.
+
+### 2. Galat Pemotongan (Truncation Error)
+Disebabkan oleh pemotongan deret tak hingga (misalnya dalam deret Taylor).
+
+## Menghitung Galat
+
+### Galat Absolut
+\`\`\`
+E_a = |nilai_sebenarnya - nilai_pendekatan|
+\`\`\`
+
+### Galat Relatif
+\`\`\`
+E_r = |(nilai_sebenarnya - nilai_pendekatan) / nilai_sebenarnya|
+\`\`\`
+    `,
+    examples: [
+      {
+        id: 'example-1-2',
+        title: 'Demonstrasi Galat Floating-Point',
+        description: 'Melihat bagaimana floating-point menyebabkan error',
+        initialCode: `import numpy as np
+
+# Contoh 1: Penjumlahan angka kecil ke angka besar
+print("Contoh 1: Penjumlahan 0.1 + 0.2")
+result = 0.1 + 0.2
+print(f"0.1 + 0.2 = {result}")
+print(f"0.1 + 0.2 == 0.3? {result == 0.3}")
+print(f"Error: {abs(result - 0.3):.2e}\\n")
+
+# Contoh 2: Akumulasi error
+print("Contoh 2: Akumulasi error dengan loop")
+sum_float = 0.0
+sum_exact = 0.0
+for i in range(100):
+    sum_float += 0.1
+    sum_exact += 1/10
+
+print(f"Jumlah dengan 0.1: {sum_float:.15f}")
+print(f"Jumlah dengan 1/10: {sum_exact:.15f}")
+print(f"Error: {abs(sum_float - sum_exact):.2e}\\n")
+
+# Contoh 3: Machine epsilon
+print("Contoh 3: Machine epsilon")
+eps = np.finfo(float).eps
+print(f"Machine epsilon: {eps}")
+print(f"1 + eps/2 == 1? {1 + eps/2 == 1}")
+print(f"1 + eps == 1? {1 + eps == 1}")`,
+        hints: ['Perhatikan bagaimana 0.1 + 0.2 tidak sama persis dengan 0.3'],
+      },
+    ],
+  },
+];
+
+// Module 3: Sistem Persamaan Linear
+const module3Lessons: Lesson[] = [
+  {
+    id: 'module-3-lesson-1',
+    moduleId: 'module-3',
+    title: 'Metode Eliminasi Gauss',
+    titleEn: 'Gauss Elimination Method',
+    order: 1,
+    objectives: [
+      'Memahami algoritma eliminasi Gauss',
+      'Menerapkan forward elimination dan back substitution',
+      'Menggunakan pivoting untuk menghindari pembagian nol',
+    ],
+    content: `
+## Metode Eliminasi Gauss
+
+Eliminasi Gauss adalah metode langsung (direct method) untuk menyelesaikan sistem persamaan linear Ax = b dengan mengubah matriks koefisien menjadi matriks segitiga atas.
+
+### Algoritma
+
+**Forward Elimination:**
+1. Eliminasi elemen di bawah diagonal utama
+2. Gunakan row operations untuk membuat nol
+3. Lakukan pivoting jika diperlukan
+
+**Back Substitution:**
+1. Selesaikan dari persamaan terakhir
+2. Substitusikan ke persamaan sebelumnya
+3. Lanjutkan ke atas
+
+### Row Operations
+
+1. **Swapping**: Menukar dua baris
+2. **Multiplication**: Mengalikan baris dengan konstanta ≠ 0
+3. **Addition**: Menambahkan kelipatan satu baris ke baris lain
+
+### Pivoting
+
+**Partial Pivoting**: Pilih elemen terbesar di kolom saat ini
+**Complete Pivoting**: Pilih elemen terbesar di seluruh submatriks yang tersisa
+    `,
+    examples: [
+      {
+        id: 'example-3-1',
+        title: 'Implementasi Eliminasi Gauss',
+        description: 'Menyelesaikan sistem 3x3',
+        initialCode: `import numpy as np
+
+def gaussian_elimination(A, b):
+    """
+    Menyelesaikan Ax = b menggunakan eliminasi Gauss
+    """
+    n = len(b)
+    # Buat augmented matrix
+    aug = np.column_stack([A, b]).astype(float)
+
+    print("Matriks Awal:")
+    print(aug)
+    print()
+
+    # Forward elimination
+    for i in range(n):
+        # Pivoting: cari baris dengan elemen terbesar
+        max_row = np.argmax(np.abs(aug[i:, i])) + i
+        if max_row != i:
+            aug[[i, max_row]] = aug[[max_row, i]]
+            print(f"Pivot baris {i} dengan baris {max_row}")
+
+        # Eliminasi
+        for j in range(i + 1, n):
+            factor = aug[j, i] / aug[i, i]
+            aug[j, i:] -= factor * aug[i, i:]
+
+        print(f"\\nSetelah iterasi {i + 1}:")
+        print(aug)
+        print()
+
+    # Back substitution
+    x = np.zeros(n)
+    for i in range(n - 1, -1, -1):
+        x[i] = (aug[i, -1] - np.dot(aug[i, i + 1:n], x[i + 1:])) / aug[i, i]
+
+    return x
+
+# Contoh sistem 3x3
+A = np.array([
+    [2, 1, -1],
+    [-3, -1, 2],
+    [-2, 1, 2]
+])
+b = np.array([8, -11, -3])
+
+print("Menyelesaikan sistem Ax = b\\n")
+x = gaussian_elimination(A, b)
+print(f"\\nSolusi: x = {x}")
+print(f"Verifikasi: A·x = {np.dot(A, x)}")`,
+      },
+    ],
+  },
+  {
+    id: 'module-3-lesson-2',
+    moduleId: 'module-3',
+    title: 'Metode Iteratif: Jacobi & Gauss-Seidel',
+    titleEn: 'Iterative Methods: Jacobi & Gauss-Seidel',
+    order: 2,
+    objectives: [
+      'Memahami perbedaan metode Jacobi dan Gauss-Seidel',
+      'Menerapkan metode iteratif untuk sistem besar',
+      'Menganalisis kriteria konvergensi',
+    ],
+    content: `
+## Metode Iteratif
+
+Metode iteratif cocok untuk sistem sparse atau sangat besar.
+
+### Metode Jacobi
+
+Untuk sistem Ax = b, rumus iterasi:
+
+\`\`\`
+xᵢ⁽ᵏ⁺¹⁾ = (bᵢ - Σaᵢⱼxⱼ⁽ᵏ⁾) / aᵢᵢ  (j ≠ i)
+\`\`\`
+
+Menggunakan semua nilai dari iterasi sebelumnya.
+
+### Metode Gauss-Seidel
+
+\`\`\`
+xᵢ⁽ᵏ⁺¹⁾ = (bᵢ - Σaᵢⱼxⱼ⁽ᵏ⁺¹⁾ - Σaᵢⱼxⱼ⁽ᵏ⁾) / aᵢᵢ
+\`\`\`
+
+Menggunakan nilai terbaru yang sudah dihitung (lebih cepat konvergen).
+
+### Kriteria Konvergensi
+
+**Diagonally Dominant**: |aᵢᵢ| > Σ|aᵢⱼ| untuk setiap baris i
+
+Metode convergen jika matriks koefisien diagonal-dominant.
+    `,
+    examples: [
+      {
+        id: 'example-3-2',
+        title: 'Perbandingan Jacobi vs Gauss-Seidel',
+        description: 'Visualisasi konvergensi kedua metode',
+        initialCode: `import numpy as np
+import matplotlib.pyplot as plt
+
+def jacobi(A, b, x0, tol=1e-6, max_iter=100):
+    n = len(b)
+    x = x0.copy()
+    errors = []
+
+    for k in range(max_iter):
+        x_new = np.zeros_like(x)
+        for i in range(n):
+            sigma = np.sum([A[i, j] * x[j] for j in range(n) if j != i])
+            x_new[i] = (b[i] - sigma) / A[i, i]
+        
+        error = np.max(np.abs(x_new - x))
+        errors.append(error)
+        x = x_new.copy()
+        
+        if error < tol:
+            break
+    
+    return x, errors
+
+def gauss_seidel(A, b, x0, tol=1e-6, max_iter=100):
+    n = len(b)
+    x = x0.copy()
+    errors = []
+
+    for k in range(max_iter):
+        x_old = x.copy()
+        for i in range(n):
+            sigma = np.sum([A[i, j] * x[j] for j in range(n) if j != i])
+            x[i] = (b[i] - sigma) / A[i, i]
+        
+        error = np.max(np.abs(x - x_old))
+        errors.append(error)
+        
+        if error < tol:
+            break
+    
+    return x, errors
+
+# Sistem diagonal-dominant
+A = np.array([
+    [10, -1, 2, 0],
+    [-1, 11, -1, 3],
+    [2, -1, 10, -1],
+    [0, 3, -1, 8]
+])
+b = np.array([6, 25, -11, 15])
+
+x0 = np.zeros(4)
+
+print("Metode Jacobi:")
+x_jacobi, err_jacobi = jacobi(A, b, x0)
+print(f"Solusi: {x_jacobi}")
+print(f"Iterasi: {len(err_jacobi)}")
+
+print("\\nMetode Gauss-Seidel:")
+x_gs, err_gs = gauss_seidel(A, b, x0)
+print(f"Solusi: {x_gs}")
+print(f"Iterasi: {len(err_gs)}")
+
+# Plot konvergensi
+plt.figure(figsize=(10, 5))
+plt.semilogy(err_jacobi, 'b-o', label='Jacobi', linewidth=2)
+plt.semilogy(err_gs, 'r-s', label='Gauss-Seidel', linewidth=2)
+plt.xlabel('Iterasi')
+plt.ylabel('Error (log scale)')
+plt.title('Perbandingan Konvergensi')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()`,
+      },
+    ],
+  },
+];
+
+// Module 4: Sistem Non-Linear
+const module4Lessons: Lesson[] = [
+  {
+    id: 'module-4-lesson-1',
+    moduleId: 'module-4',
+    title: 'Matriks Jacobian & Sistem Non-Linear',
+    titleEn: 'Jacobian Matrix & Non-Linear Systems',
+    order: 1,
+    objectives: [
+      'Memahami konsep matriks Jacobian',
+      'Menghitung Jacobian untuk sistem persamaan non-linear',
+      'Menerapkan Newton-Raphson untuk sistem',
+    ],
+    content: `
+## Sistem Persamaan Non-Linear
+
+Untuk sistem f(x) = 0 dengan beberapa variabel:
+
+\`\`\`
+f₁(x₁, x₂, ..., xₙ) = 0
+f₂(x₁, x₂, ..., xₙ) = 0
+...
+fₙ(x₁, x₂, ..., xₙ) = 0
+\`\`\`
+
+### Matriks Jacobian
+
+Matriks Jacobian J berisi turunan parsial:
+
+\`\`\`
+J = [∂fᵢ/∂xⱼ] = 
+[∂f₁/∂x₁  ∂f₁/∂x₂  ...  ∂f₁/∂xₙ]
+[∂f₂/∂x₁  ∂f₂/∂x₂  ...  ∂f₂/∂xₙ]
+[  ...      ...      ...   ...  ]
+[∂fₙ/∂x₁  ∂fₙ/∂x₂  ...  ∂fₙ/∂xₙ]
+\`\`\`
+
+### Newton-Raphson untuk Sistem
+
+\`\`\`
+x⁽ᵏ⁺¹⁾ = x⁽ᵏ⁾ - J(x⁽ᵏ⁾)⁻¹ f(x⁽ᵏ⁾)
+\`\`\`
+
+Dimana:
+- J adalah matriks Jacobian
+- J⁻¹ adalah invers Jacobian
+- f(x) adalah vektor fungsi
+
+### Langkah-langkah
+
+1. Hitung Jacobian J di x
+2. Hitung f(x)
+3. Selesaikan J·Δx = -f(x) untuk Δx
+4. Update: x ← x + Δx
+5. Ulangi sampai konvergen
+    `,
+    examples: [
+      {
+        id: 'example-4-1',
+        title: 'Sistem 2 Persamaan Non-Linear',
+        description: 'Mencari solusi sistem non-linear dengan Newton-Raphson',
+        initialCode: `import numpy as np
+
+def f(x):
+    """Sistem non-linear: f(x) = 0"""
+    return np.array([
+        x[0]**2 + x[1]**2 - 4,      # x² + y² = 4
+        x[0] - x[1] - 1                # x - y = 1
+    ])
+
+def jacobian(x):
+    """Matriks Jacobian"""
+    return np.array([
+        [2*x[0], 2*x[1]],  # ∂f₁/∂x, ∂f₁/∂y
+        [1, -1]           # ∂f₂/∂x, ∂f₂/∂y
+    ])
+
+def newton_raphson_system(x0, tol=1e-6, max_iter=100):
+    x = np.array(x0, dtype=float)
+    
+    for k in range(max_iter):
+        fx = f(x)
+        J = jacobian(x)
+        
+        # Hitung Δx dengan menyelesaikan J·Δx = -f(x)
+        delta_x = np.linalg.solve(J, -fx)
+        
+        x_new = x + delta_x
+        error = np.max(np.abs(x_new - x))
+        
+        print(f"Iterasi {k+1}: x = [{x_new[0]:.6f}, {x_new[1]:.6f}], error = {error:.2e}")
+        
+        x = x_new
+        if error < tol:
+            break
+    
+    return x
+
+# Tebakan awal
+x0 = [2, 1]
+
+print("Menyelesaikan sistem non-linear:")
+print("  x² + y² = 4")
+print("  x - y = 1")
+print()
+
+solusi = newton_raphson_system(x0)
+print(f"\\nSolusi konvergen: x = {solusi[0]:.6f}, y = {solusi[1]:.6f}")
+print(f"Verifikasi:")
+print(f"  x² + y² = {solusi[0]**2 + solusi[1]**2:.6f}")
+print(f"  x - y = {solusi[0] - solusi[1]:.6f}")`,
+      },
+    ],
+  },
+];
+
+// Module 5: Optimasi Numerik
+const module5Lessons: Lesson[] = [
+  {
+    id: 'module-5-1',
+    moduleId: 'module-5',
+    title: 'Golden Section Search',
+    titleEn: 'Golden Section Search',
+    order: 1,
+    objectives: [
+      'Memahami prinsip golden section search',
+      'Menerapkan untuk optimasi satu dimensi',
+      'Menerapkan untuk aplikasi MPPT',
+    ],
+    content: `
+## Golden Section Search
+
+Metode golden section search adalah teknik optimasi satu dimensi yang membagi interval dengan rasio golden ratio φ = (√5 - 1)/2 ≈ 0.618.
+
+### Algoritma
+
+1. Tentukan interval awal [a, b]
+2. Hitung dua titik uji:
+   - x₁ = b - φ(b - a)
+   - x₂ = a + φ(b - a)
+3. Bandingkan f(x₁) dan f(x₂):
+   - Jika f(x₁) < f(x₂): buang [x₂, b], set b = x₂
+   - Jika f(x₁) > f(x₂): buang [a, x₁], set a = x₁
+4. Ulangi sampai interval cukup kecil
+
+### Aplikasi: MPPT
+
+Maximum Power Point Tracking (MPPT) pada panel surya mencari titik daya maksimum pada kurva P-V.
+
+### Kelebihan & Kekurangan
+
+**Kelebihan:**
+- Konvergensi terjamin untuk fungsi unimodal
+- Tidak membutuh turunan
+- Efisien
+
+**Kekurangan:**
+- Hanya untuk optimasi satu dimensi
+- Membutuh fungsi unimodal (satu maksimum/minimum)
+    `,
+    examples: [
+      {
+        id: 'example-5-1',
+        title: 'Optimasi dengan Golden Section Search',
+        description: 'Mencari minimum fungsi',
+        initialCode: `import numpy as np
+import matplotlib.pyplot as plt
+
+def golden_section_search(f, a, b, tol=1e-6, max_iter=100):
+    """
+    Golden Section Search untuk mencari minimum f(x) pada [a, b]
+    """
+    phi = (np.sqrt(5) - 1) / 2  # Golden ratio
+    
+    x1 = b - phi * (b - a)
+    x2 = a + phi * (b - a)
+    f1 = f(x1)
+    f2 = f(x2)
+    
+    iterations = []
+    
+    for k in range(max_iter):
+        iterations.append({'iter': k+1, 'a': a, 'b': b, 'x1': x1, 'x2': x2, 'interval': b - a})
+        
+        if f1 < f2:
+            b = x2
+            x2 = x1
+            f2 = f1
+            x1 = b - phi * (b - a)
+            f1 = f(x1)
+        else:
+            a = x1
+            x1 = x2
+            f1 = f2
+            x2 = a + phi * (b - a)
+            f2 = f(x2)
+        
+        if abs(b - a) < tol:
+            break
+    
+    x_opt = (a + b) / 2
+    return x_opt, f(x_opt), iterations
+
+# Fungsi test: f(x) = x² - 4x + 3
+def f(x):
+    return x**2 - 4*x + 3
+
+# Cari minimum pada [0, 4]
+x_opt, f_opt, history = golden_section_search(f, 0, 4)
+
+print(f"Minimum ditemukan di: x = {x_opt:.6f}")
+print(f"Nilai minimum: f(x) = {f_opt:.6f}")
+print(f"Jumlah iterasi: {len(history)}")
+
+# Visualisasi
+x = np.linspace(0, 4, 100)
+y = f(x)
+
+plt.figure(figsize=(10, 6))
+plt.plot(x, y, 'b-', linewidth=2, label='f(x) = x² - 4x + 3')
+plt.axvline(x_opt, color='r', linestyle='--', label=f'x_opt = {x_opt:.3f}')
+plt.plot(x_opt, f_opt, 'ro', markersize=10, label='Minimum')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.title('Golden Section Search')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()`,
+      },
+      {
+        id: 'example-5-2',
+        title: 'Simulasi MPPT untuk Panel Surya',
+        description: 'Mencari MPP pada kurva P-V panel surya',
+        initialCode: `import numpy as np
+
+# Model kurva I-V panel surya sederhana
+def pv_current(v, voc=0.7, isc=8.5, n=1.5):
+    """Model single-diode"""
+    k = 1.38e-23  # Boltzmann constant
+    q = 1.602e-19 # Electron charge
+    T = 298      # Temperature (K)
+    vt = n * k * T / q
+    
+    # Rs = 0.01  # Series resistance (disederhanakan)
+    
+    # I = I_sc - I0*(exp(q*(V+I*Rs)/(n*k*T)) - 1) - V/Rs
+    # Versi sederhana tanpa Rs:
+    return isc * (1 - np.exp(v / (n * vt)))
+
+def pv_power(v):
+    """Daya panel: P = V × I"""
+    return v * pv_current(v)
+
+# Golden Section Search untuk MPPT
+def mppt_search(v_min, v_min_check=0, v_max=0.8, tol=1e-4):
+    """Mencari voltage pada daya maksimum"""
+    phi = (np.sqrt(5) - 1) / 2
+    a, b = v_min, v_max
+    
+    for _ in range(100):
+        v1 = b - phi * (b - a)
+        v2 = a + phi * (b - a)
+        
+        if pv_power(v1) < pv_power(v2):
+            a = v1
+        else:
+            b = v2
+        
+        if abs(b - a) < tol:
+            break
+    
+    v_mpp = (a + b) / 2
+    p_max = pv_power(v_mpp)
+    i_mpp = pv_current(v_mpp)
+    
+    return v_mpp, i_mpp, p_max
+
+# Cari MPP
+v_mpp, i_mpp, p_max = mppt_search(0)
+
+print("=== Maximum Power Point Tracking ===")
+print(f"Voltage MPP: {v_mpp:.4f} V")
+print(f"Current MPP: {i_mpp:.4f} A")
+print(f"Power MPP:   {p_max:.4f} W")
+print()
+print(f"Fill Factor:  {p_max / (0.7 * 8.5) * 100:.2f}%")
+
+# Plot kurva P-V
+v = np.linspace(0, 0.7, 100)
+p = [pv_power(vi) for vi in v]
+
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 6))
+plt.plot(v, p, 'b-', linewidth=2, label='P-V Curve')
+plt.plot(v_mpp, p_max, 'ro', markersize=12, 
+         label=f'MPP ({v_mpp:.3f}V, {p_max:.3f}W)')
+plt.axvline(v_mpp, color='r', linestyle='--', alpha=0.5)
+plt.axhline(p_max, color='r', linestyle='--', alpha=0.5)
+plt.xlabel('Voltage (V)')
+plt.ylabel('Power (W)')
+plt.title('Kurva P-V Panel Surya & MPP')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()`,
+      },
+    ],
+  },
+];
+
+// Module 6: Interpolasi
+const module6Lessons: Lesson[] = [
+  {
+    id: 'module-6-1',
+    moduleId: 'module-6',
+    title: 'Interpolasi Polinomial: Lagrange & Newton',
+    titleEn: 'Polynomial Interpolation: Lagrange & Newton',
+    order: 1,
+    objectives: [
+      'Memahami konsep interpolasi polinomial',
+      'Menerapkan metode Lagrange',
+      'Menerapkan metode Newton divided differences',
+    ],
+    content: `
+## Interpolasi Polinomial
+
+Interpolasi adalah teknik untuk memperkirakan nilai fungsi di antara titik-titik data yang diketahui.
+
+### Polinomial Interpolasi
+
+Diberikan n+1 titik data (x₀, y₀), (x₁, y₁), ..., (xₙ, yₙ), ada polinomial unik Pₙ(x) derajat ≤ n yang melalui semua titik.
+
+### Metode Lagrange
+
+\`\`\`
+Pₙ(x) = Σ yⱼ × Lⱼ(x)
+\`\`\`
+
+Dimana Lⱼ(x) adalah polinomial Lagrange basis:
+
+\`\`\`
+Lⱼ(x) = Π (x - xⱼ) / (xⱼ - xₖ)
+     k≠j
+\`\`\`
+
+### Metode Newton Divided Differences
+
+Menggunakan divided differences untuk menghitung koefisien polinomial:
+
+\`\`\`
+f[xᵢ] = f(xᵢ)
+f[xᵢ, xⱼ] = (f[xⱼ] - f[xᵢ]) / (xⱼ - xᵢ)
+f[xᵢ, xⱼ, xₖ] = (f[xⱼ, xₖ] - f[xᵢ, xⱼ]) / (xₖ - xᵢ)
+\`\`\`
+    `,
+    examples: [
+      {
+        id: 'example-6-1',
+        title: 'Implementasi Metode Lagrange',
+        description: 'Interpolasi data sensor suhu',
+        initialCode: `import numpy as np
+import matplotlib.pyplot as plt
+
+def lagrange_interpolation(x_data, y_data, x):
+    """
+    Interpolasi polinomial menggunakan metode Lagrange
+    """
+    n = len(x_data)
+    y = 0
+    
+    for i in range(n):
+        # Hitung basis Lagrange L_i(x)
+        L_i = 1
+        for j in range(n):
+            if j != i:
+                L_i *= (x - x_data[j]) / (x_data[i] - x_data[j])
+        y += y_data[i] * L_i
+    
+    return y
+
+# Data sensor suhu (waktu, suhu)
+x_data = np.array([0, 2, 4, 6, 8])
+y_data = np.array([25, 28, 31, 30, 33])
+
+# Estimasi suhu pada t = 3 dan t = 5
+x_interp = np.array([3, 5])
+y_interp = lagrange_interpolation(x_data, y_data, x_interp)
+
+print("Data Sensor Suhu:")
+for xi, yi in zip(x_data, y_data):
+    print(f"  t = {xi} jam → T = {yi}°C")
+
+print("\\nEstimasi dengan Interpolasi Lagrange:")
+for xi, yi in zip(x_interp, y_interp):
+    print(f"  t = {xi} jam → T = {yi:.2f}°C (estimasi)")
+
+# Visualisasi
+x_plot = np.linspace(0, 8, 100)
+y_plot = lagrange_interpolation(x_data, y_data, x_plot)
+
+plt.figure(figsize=(10, 6))
+plt.plot(x_data, y_data, 'ro', markersize=8, label='Data Sensor')
+plt.plot(x_plot, y_plot, 'b-', linewidth=2, label='Interpolasi Lagrange')
+plt.plot(x_interp, y_interp, 'gs', markersize=10, label='Estimasi')
+plt.xlabel('Waktu (jam)')
+plt.ylabel('Suhu (°C)')
+plt.title('Interpolasi Data Sensor Suhu dengan Metode Lagrange')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()`,
+      },
+    ],
+  },
+  {
+    id: 'module-6-lesson-2',
+    moduleId: 'module-6',
+    title: 'Cubic Spline Interpolation',
+    titleEn: 'Cubic Spline Interpolation',
+    order: 2,
+    objectives: [
+      'Memahami konsep spline interpolation',
+      'Menerapkan cubic spline',
+      'Membandingkan spline dengan polinomial biasa',
+    ],
+    content: `
+## Cubic Spline Interpolation
+
+Spline interpolation menggunakan polinomial berderajat rendah (biasanya kubik) di setiap subinterval untuk menghindari osilasi.
+
+### Keuntungan Spline
+
+- Lebih halus daripada interpolasi polinomial tunggal
+- Tidak ada osilasi (Runge's phenomenon)
+- Bisa menangani data yang banyak
+
+### Jenis Spline
+
+1. **Natural Spline**: Turunan kedua = 0 di batas
+2. **Clamped Spline**: Turunan pertama ditentukan di batas
+3. **Not-a-Knot Spline**: Tidak melewati titik data
+
+### Algoritma Cubic Spline
+
+Untuk setiap interval [xᵢ, xᵢ₊₁]:
+
+\`\`\`
+Sᵢ(x) = aᵢ + bᵢ(x - xᵢ) + cᵢ(x - xᵢ)² + dᵢ(x - xᵢ)³
+\`\`\`
+
+Dengan kondisi:
+- Sᵢ(xᵢ) = yᵢ, Sᵢ(xᵢ₊₁) = yᵢ₊₁
+- S'ᵢ(xᵢ₊₁) = S'ᵢ₊₁(xᵢ) (continuity turunan pertama)
+- S''ᵢ(xᵢ₊₁) = S''ᵢ₊₁(xᵢ) (continuity turunan kedua)
+    `,
+    examples: [
+      {
+        id: 'example-6-2',
+        title: 'Cubic Spline vs Polinomial Biasa',
+        description: 'Membandingkan kedua metode interpolasi',
+        initialCode: `import numpy as np
+import matplotlib.pyplot as plt
+from scipy.interpolate import CubicSpline, interp1d
+
+# Data sampling
+x_data = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+# Fungsi dengan noise
+y_data = np.sin(x_data) + np.random.normal(0, 0.1, len(x_data))
+
+# Interpolasi
+x_smooth = np.linspace(0, 10, 100)
+
+# Polinomial derajat 10 (overfitting)
+poly = interp1d(x_data, y_data, kind=10)
+y_poly = poly(x_smooth)
+
+# Cubic spline
+spline = CubicSpline(x_data, y_data)
+y_spline = spline(x_smooth)
+
+# Visualisasi perbandingan
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+
+# Plot 1: Polinomial derajat tinggi
+ax1.plot(x_data, y_data, 'ro', markersize=8, label='Data dengan Noise')
+ax1.plot(x_smooth, y_poly, 'b-', linewidth=2, label='Polinomial Derajat 10')
+ax1.set_xlabel('x')
+ax1.set_ylabel('y')
+ax1.set_title('Interpolasi Polinomial (Overfitting)')
+ax1.legend()
+ax1.grid(True, alpha=0.3)
+ax1.set_ylim(-2, 2)
+
+# Plot 2: Cubic Spline
+ax2.plot(x_data, y_data, 'ro', markersize=8, label='Data dengan Noise')
+ax2.plot(x_smooth, y_spline, 'g-', linewidth=2, label='Cubic Spline')
+ax2.set_xlabel('x')
+ax2.set_ylabel('y')
+ax2.set_title('Cubic Spline Interpolation')
+ax2.legend()
+ax2.grid(True, alpha=0.3)
+ax2.set_ylim(-2, 2)
+
+plt.tight_layout()
+plt.show()
+
+# Calculate errors
+error_poly = np.mean((y_data - poly(x_data))**2)
+error_spline = np.mean((y_data - spline(x_data))**2)
+
+print(f"Error Polinomial (MSE): {error_poly:.6f}")
+print(f"Error Spline (MSE):     {error_spline:.6f}")`,
+      },
+    ],
+  },
+];
+
+// Module 7: Integrasi & Diferensiasi
+const module7Lessons: Lesson[] = [
+  {
+    id: 'module-7-1',
+    moduleId: 'module-7',
+    title: 'Integrasi Numerik',
+    titleEn: 'Numerical Integration',
+    order: 1,
+    objectives: [
+      'Memahami aturan integrasi numerik',
+      'Menerapkan aturan trapezoidal dan Simpson',
+      'Menganalisis error integrasi',
+    ],
+    content: `
+## Integrasi Numerik
+
+Integrasi numerik digunakan untuk menghitung integral definite ketika integrand tidak dapat diintegrasikan secara analitik.
+
+### Aturan Trapezoidal
+
+Membagi area di bawah kurva menjadi trapesium:
+
+\`\`\`
+∫[a,b] f(x)dx ≈ (b-a)/2n × [f(x₀) + 2f(x₁) + 2f(x₂) + ... + 2f(xₙ₋₁) + f(xₙ)]
+\`\`\`
+
+Error: O(h²)
+
+### Aturan Simpson 1/3
+
+Menggunakan parabola untuk setiap 3 titik:
+
+\`\`\`
+∫[a,b] f(x)dx ≈ h/3 × [f(x₀) + 4f(x₁) + 2f(x₂) + 4f(x₃) + ... + 4f(xₙ₋₁) + f(xₙ)]
+\`\`\`
+
+Dimana n harus genap. Error: O(h⁴)
+
+### Aturan Simpson 3/8
+
+Menggunakan kubik untuk setiap 4 titik. Error: O(h⁵)
+    `,
+    examples: [
+      {
+        id: 'example-7-1',
+        title: 'Perbandingan Metode Integrasi',
+        description: 'Menghitung integral fungsi dan membandingkan akurasi',
+        initialCode: `import numpy as np
+import matplotlib.pyplot as plt
+
+def f(x):
+    """Fungsi untuk diintegrasikan: f(x) = e^x"""
+    return np.exp(x)
+
+def trapezoidal(f, a, b, n=100):
+    """Aturan Trapezoidal"""
+    h = (b - a) / n
+    x = np.linspace(a, b, n + 1)
+    y = f(x)
+    return h * (0.5 * y[0] + np.sum(y[1:-1]) + 0.5 * y[-1])
+
+def simpson_13(f, a, b, n=100):
+    """Aturan Simpson 1/3 (n harus genap)"""
+    if n % 2 != 0:
+        n += 1
+    h = (b - a) / n
+    x = np.linspace(a, b, n + 1)
+    y = f(x)
+    return h / 3 * (y[0] + 4 * np.sum(y[1:-1:2]) + 2 * np.sum(y[2:-1:2]) + y[-1])
+
+# Nilai eksak
+a, b = 0, 1
+exact = np.exp(1) - np.exp(0)
+
+# Integrasi numerik
+trap = trapezoidal(f, a, b)
+simp = simpson_13(f, a, b)
+
+print("=== Integrasi ∫₀¹ eˣ dx ===")
+print(f"Nilai Eksak:    {exact:.10f}")
+print(f"Trapezoidal:    {trap:.10f} (error: {abs(trap-exact):.2e})")
+print(f"Simpson 1/3:   {simp:.10f} (error: {abs(simp-exact):.2e})")
+
+# Error analysis
+ns = np.array([10, 20, 40, 80, 160, 320])
+errors_trap = []
+errors_simp = []
+
+for n in ns:
+    trap = trapezoidal(f, a, b, n)
+    simp = simpson_13(f, a, b, n)
+    errors_trap.append(abs(trap - exact))
+    errors_simp.append(abs(simp - exact))
+
+print(f"\\n{'n':<10} {'Trapezoidal Error':<20} {'Simpson Error':<20}")
+print("-" * 50)
+for n, e_trap, e_simp in zip(ns, errors_trap, errors_simp):
+    print(f"{n:<10} {e_trap:<20.2e} {e_simp:<20.2e}")`,
+      },
+    ],
+  },
+  {
+    id: 'module-7-lesson-2',
+    moduleId: 'module-7',
+    title: 'Diferensiasi Numerik',
+    titleEn: 'Numerical Differentiation',
+    order: 2,
+    objectives: [
+      'Memahami metode finite difference',
+      'Menerapkan forward, backward, dan central difference',
+      'Menganalisis order error',
+    ],
+    content: `
+## Diferensiasi Numerik
+
+Diferensiasi numerik mengaproksimasi turunan fungsi menggunakan data diskrit.
+
+### Finite Difference Formulas
+
+**Forward Difference** (beda maju):
+\`\`\`
+f'(x) ≈ (f(x+h) - f(x)) / h
+\`\`\`
+Error: O(h)
+
+**Backward Difference** (beda mundur):
+\`\`\`
+f'(x) ≈ (f(x) - f(x-h)) / h
+\`\`\`
+Error: O(h)
+
+**Central Difference** (beda tengah - lebih akurat):
+\`\`\`
+f'(x) ≈ (f(x+h) - f(x-h)) / (2h)
+\`\`\`
+Error: O(h²)
+
+### Turunan Kedua
+
+**Central Difference untuk f''(x)**:
+\`\`\`
+f''(x) ≈ (f(x+h) - 2f(x) + f(x-h)) / h²
+\`\`\`
+Error: O(h²)
+    `,
+    examples: [
+      {
+        id: 'example-7-2',
+        title: 'Perbandingan Metode Diferensiasi',
+        description: 'Menghitung turunan dan menganalisis error',
+        initialCode: `import numpy as np
+import matplotlib.pyplot as plt
+
+def f(x):
+    """Fungsi: f(x) = sin(x)"""
+    return np.sin(x)
+
+def df_exact(x):
+    """Turunan eksak: f'(x) = cos(x)"""
+    return np.cos(x)
+
+def forward_diff(f, x, h=0.01):
+    return (f(x + h) - f(x)) / h
+
+def backward_diff(f, x, h=0.01):
+    return (f(x) - f - h)) / h
+
+def central_diff(f, x, h=0.01):
+    return (f(x + h) - f(x - h)) / (2 * h)
+
+# Hitung turunan di x = π/4
+x = np.pi / 4
+exact = df_exact(x)
+forward = forward_diff(f, x)
+backward = backward_diff(f, x)
+central = central_diff(f, x)
+
+print("=== Diferensiasi Numerik di x = π/4 ===")
+print(f"Turunan Eksak: cos(π/4) = {exact:.10f}")
+print(f"Forward Diff:  {forward:.10f} (error: {abs(forward-exact):.2e})")
+print(f"Backward Diff: {backward:.10f} (error: {abs(backward-exact):.2e})")
+print(f"Central Diff:  {central:.10f} (error: {abs(central-exact):.2e})")
+
+# Error analysis dengan berbagai h
+h_values = np.logspace(-6, -1, 6)
+errors_forward = []
+errors_backward = []
+errors_central = []
+
+for h in h_values:
+    errors_forward.append(abs(forward_diff(f, x, h) - exact))
+    errors_backward.append(abs(backward_diff(f, x, h) - exact))
+    errors_central.append(abs(central_diff(f, x, h) - exact))
+
+# Visualisasi error
+plt.figure(figsize=(10, 6))
+plt.loglog(h_values, errors_forward, 'b-o', label='Forward Diff (O(h))')
+plt.loglog(h_values, errors_backward, 'r-s', label='Backward Diff (O(h))')
+plt.loglog(h_values, errors_central, 'g-^', label='Central Diff (O(h²))')
+plt.xlabel('Step Size (h)')
+plt.ylabel('Error (log scale)')
+plt.title('Error vs Step Size untuk Diferensiasi Numerik')
+plt.legend()
+plt.grid(True, alpha=0.3, which='both', linestyle='--')
+plt.show()`,
+      },
+    ],
+  },
+];
+
+// Module 8: Solusi PDB
+const module8Lessons: Lesson[] = [
+  {
+    id: 'module-8-1',
+    moduleId: 'module-8',
+    title: 'Metode Euler & Runge-Kutta',
+    titleEn: 'Euler & Runge-Kutta Methods',
+    order: 1,
+    objectives: [
+      'Memahami konsep solusi PDB numerik',
+      'Menerapkan metode Euler',
+      'Menerapkan metode Runge-Kutta orde 4',
+    ],
+    content: `
+## Solusi Persamaan Diferensial Biasa (PDB)
+
+PDB orde 1: dy/dt = f(t, y), y(t₀) = y₀
+
+### Metode Euler
+
+Metode paling sederhana, menggunakan turunan maju:
+
+\`\`\`
+yₙ₊₁ = yₙ + h × f(tₙ, yₙ)
+tₙ₊₁ = tₙ + h
+\`\`\`
+
+Error: O(h) - konvergensi lambat
+
+### Metode Runge-Kutta Orde 4 (RK4)
+
+Lebih akurat dengan 4 evaluasi fungsi per langkah:
+
+\`\`\`
+k₁ = h × f(tₙ, yₙ)
+k₂ = h × f(tₙ + h/2, yₙ + k₁/2)
+k₃ = h × f(tₙ + h/2, yₙ + k₂/2)
+k₄ = h × f(tₙ + h, yₙ + k₃)
+
+yₙ₊₁ = yₙ + (k₁ + 2k₂ + 2k₃ + k₄) / 6
+\`\`\`
+
+Error: O(h⁴) - sangat akurat
+    `,
+    examples: [
+      {
+        id: 'example-8-1',
+        title: 'RC Circuit Transient Response',
+        description: 'Simulasi respon transien rangkaian RC',
+        initialCode: `import numpy as np
+import matplotlib.pyplot as plt
+
+def rc_circuit_ode(t, y, R=1000, C=0.001, V_in=5):
+    """
+    dy/dt = (V_in - y) / (R * C)
+    where y = voltage across capacitor
+    """
+    return (V_in - y) / (R * C)
+
+def euler_method(f, t_span, y0, h=0.01):
+    """Metode Euler"""
+    t_values = np.arange(t_span[0], t_span[1], h)
+    y_values = [y0]
+    
+    for i in range(len(t_values) - 1):
+        t = t_values[i]
+        y = y_values[i]
+        y_new = y + h * f(t, y)
+        y_values.append(y_new)
+    
+    return t_values, y_values
+
+def runge_kutta_4(f, t_span, y0, h=0.01):
+    """Metode Runge-Kutta Orde 4"""
+    t_values = np.arange(t_span[0], t_span[1], h)
+    y_values = [y0]
+    
+    for i in range(len(t_values) - 1):
+        t = t_values[i]
+        y = y_values[i]
+        
+        k1 = h * f(t, y)
+        k2 = h * f(t + h/2, y + k1/2)
+        k3 = h * f(t + h/2, y + k2/2)
+        k4 = h * f(t + h, y + k3)
+        
+        y_new = y + (k1 + 2*k2 + 2*k3 + k4) / 6
+        y_values.append(y_new)
+    
+    return t_values, y_values
+
+# Simulasi RC circuit
+R = 1000  # ohm
+C = 0.001  # farad
+V_in = 5    # volt
+y0 = 0    # kapasitor mulai kosong
+t_span = (0, 0.01)  # 10ms
+
+# Hitung solusi
+t_euler, y_euler = euler_method(rc_circuit_ode, t_span, y0)
+t_rk4, y_rk4 = runge_kutta_4(rc_circuit_ode, t_span, y0)
+
+# Solusi analitis: V_c = V_in * (1 - e^(-t/RC))
+tau = R * C
+y_exact = V_in * (1 - np.exp(-t_euler / tau))
+
+print("=== Simulasi RC Circuit ===")
+print(f"Time Constant (τ = RC): {tau:.6f} s")
+print(f"Voltage Steady State: {V_in} V")
+print()
+
+# Visualisasi
+plt.figure(figsize=(12, 6))
+plt.plot(t_euler, y_euler, 'b--', linewidth=2, alpha=0.7, label='Euler Method')
+plt.plot(t_rk4, y_rk4, 'g-', linewidth=2, label='Runge-Kutta 4')
+plt.plot(t_euler, y_exact, 'r:', linewidth=3, label='Exact Solution')
+plt.xlabel('Time (s)')
+plt.ylabel('Capacitor Voltage (V)')
+plt.title('RC Circuit: Transient Response')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+
+# Hitung error pada t = 5ms
+idx = len(t_euler) // 2
+error_euler = abs(y_euler[idx] - y_exact[idx])
+error_rk4 = abs(y_rk4[idx] - y_exact[idx])
+
+print(f"Error pada t = {t_euler[idx]*1000:.1f} ms:")
+print(f"  Euler:    {error_euler:.4e} V")
+print(f"  RK4:      {error_rk4:.4e} V")`,
+      },
+    ],
+  },
+];
+
+// Module 9: Project Power Flow
+const module9Lessons: Lesson[] = [
+  {
+    id: 'module-9-1',
+    moduleId: 'module-9',
+    title: 'Simulasi Power Flow dengan Newton-Raphson',
+    titleEn: 'Power Flow Simulation with Newton-Raphson',
+    order: 1,
+    objectives: [
+      'Memahami konsep power flow sistem tenaga',
+      'Menerapkan algoritma Newton-Raphson untuk power flow',
+      'Menganalisis konvergensi power flow',
+    ],
+    content: `
+## Power Flow Analysis
+
+Power flow analysis (load flow) adalah komputasi aliran daya steady-state dalam sistem tenaga listrik.
+
+### Persamaan Power Flow
+
+**Persamaan Active Power (P)**:
+\`\`\`
+Pᵢ = Vᵢ × Σ Vⱼ (Gᵢⱼ cos(θᵢⱼ) + Bᵢⱼ sin(θᵢⱼ))
+\`\`\`
+
+**Persamaan Reactive Power (Q)**:
+\`\`\`
+Qᵢ = Vᵢ × Σ Vⱼ (Gᵢⱼ sin(θᵢⱼ) - Bᵢⱼ cos(θᵢⱼ))
+\`\`\`
+
+### Tipe Bus
+
+1. **Slack Bus (V, θ diketahui)**: Menyediakan referensi sudut
+2. **PV Bus (P, V diketahui)**: Pembangkit
+3. **PQ Bus (P, Q diketahui)**: Beban
+
+### Algoritma Newton-Raphson Power Flow
+
+1. Formulasi persamaan dalam bentuk: f(x) = 0
+2. Hitung Jacobian matrix J
+3. Iterasi: x⁽ᵏ⁺¹⁾ = x⁽ᵏ⁾ - J⁻¹f(x⁽ᵏ⁾)
+4. Ulangi sampai konvergen
+    `,
+    examples: [
+      {
+        id: 'example-9-1',
+        title: 'Simulasi Power Flow Sistem 3 Bus',
+        description: 'Newton-Raphson untuk power flow sederhana',
+        initialCode: `import numpy as np
+import matplotlib.pyplot as plt
+
+def power_flow_newton_raphson(bus_data, max_iter=20, tol=1e-6):
+    """
+    Power flow sederhana untuk sistem 3 bus
+    Format bus_data: {bus_id: [type, P, Q, V, theta]}
+    type: 0=slack, 1=PV, 2=PQ
+    """
+    # Extract data
+    buses = list(bus_data.keys())
+    n = len(buses)
+    
+    # Initialize voltage magnitudes and angles
+    V = np.zeros(n)
+    theta = np.zeros(n)
+    
+    for bus_id, data in bus_data.items():
+        idx = bus_id - 1
+        V[idx] = data['V'] if data['V'] is not None else 1.0
+        theta[idx] = data['theta'] if data['theta'] is not None else 0.0
+    
+    # Ybus (simplified - diagonal dominance)
+    Ybus = np.array([
+        [3, -1, -1],
+        [-1, 3, -1],
+        [-1, -1, 3]
+    ], dtype=complex)
+    
+    # Simplified G and B from Ybus
+    G = Ybus.real
+    B = Ybus.imag
+    
+    print(f"Iterasi |     V₁       |     V₂       |     V₃       |     θ₁      |     θ₂      |     θ₃")
+    print("-" * 75)
+    
+    for iteration in range(max_iter):
+        # Calculate power injections (simplified)
+        P_calc = np.zeros(n)
+        Q_calc = np.zeros(n)
+        
+        for i in range(n):
+            for j in range(n):
+                P_calc[i] += V[i] * V[j] * (G[i,j] * np.cos(theta[i]-theta[j]) + B[i,j] * np.sin(theta[i]-theta[j]))
+                Q_calc[i] += V[i] * V[j] * (G[i,j] * np.sin(theta[i]-theta[j]) - B[i,j] * np.cos(theta[i]-theta[j]))
+        
+        # Calculate mismatches (simplified)
+        mismatches = []
+        for bus_id, data in bus_data.items():
+            idx = bus_id - 1
+            type_ = data['type']
+            
+            if type_ == 1:  # PV bus
+                P_mismatch = data['P'] - P_calc[idx]
+                theta_mismatch = 0  # not used in this simplified version
+                # Update theta
+                if abs(P_mismatch) > tol:
+                    theta[idx] += 0.1 * np.sign(P_mismatch)
+                mismatches.append(abs(P_mismatch))
+            elif type_ == 2:  # PQ bus
+                P_mismatch = data['P'] - P_calc[idx]
+                Q_mismatch = data['Q'] - Q_calc[idx]
+                if abs(P_mismatch) > tol:
+                    theta[idx] += 0.1 * np.sign(P_mismatch)
+                if abs(Q_mismatch) > tol:
+                    V[idx] += 0.01 * np.sign(Q_mismatch)
+                mismatches.append(abs(P_mismatch) + abs(Q_mismatch))
+        
+        # Print progress
+        v_str = '  '.join([f'{V[i]:.6f}' for i in range(n)])
+        theta_str = '  '.join([f'{theta[i]:.6f}' for i in range(n)])
+        print(f"  {iteration+1:4d}   {v_str}   {theta_str}")
+        
+        # Check convergence
+        if max(mismatches) < tol:
+            print(f"\\nKonvergen pada iterasi {iteration+1}")
+            break
+    
+    return V, theta
+
+# Define 3-bus system
+bus_data = {
+    1: {'type': 0, 'P': None, 'Q': None, 'V': 1.05, 'theta': 0},        # Slack
+    2: {'type': 1, 'P': 0.5, 'Q': None, 'V': 1.0, 'theta': None},     # PV
+    3: {'type': 2, 'P': -0.6, 'Q': -0.1, 'V': None, 'theta': None} # PQ
+}
+
+print("=== Power Flow Analysis (Simplified 3-Bus System) ===\\n")
+V, theta = power_flow_newton_raphson(bus_data)
+
+print("\\nHasil Akhir:")
+for bus_id, data in bus_data.items():
+    idx = bus_id - 1
+    S = V[idx] * np.exp(1j * theta[idx])
+    print(f"Bus {bus_id}: |V| = {V[idx]:.4f} pu, θ = {np.degrees(theta[idx]):.2f}°")
+    print(f"         S = {S:.4f} pu")`,
+      },
+    ],
+  },
+];
+
+// All modules
+  {
+    id: 'module-2-lesson-1',
+    moduleId: 'module-2',
+    title: 'Metode Bisection (Bagi Dua)',
+    titleEn: 'Bisection Method',
+    order: 1,
+    objectives: [
+      'Memahami algoritma metode bisection',
+      'Menerapkan metode bisection untuk mencari akar fungsi',
+      'Menganalisis konvergensi metode bisection',
+    ],
+    content: `
+## Metode Bisection
+
+Metode bisection adalah salah satu metode tertutup (bracketing method) yang paling sederhana untuk mencari akar persamaan non-linear f(x) = 0.
+
+### Prinsip Kerja
+
+Metode ini berdasarkan **Teorema Nilai Antara**:
+> Jika f(x) kontinu pada interval [a, b] dan f(a)·f(b) < 0, maka ada setidaknya satu akar dalam interval [a, b].
+
+### Algoritma
+
+1. Tentukan interval awal [a, b] di mana f(a)·f(b) < 0
+2. Hitung titik tengah: c = (a + b) / 2
+3. Evaluasi f(c):
+   - Jika f(c) = 0, maka c adalah akar
+   - Jika f(a)·f(c) < 0, akar ada di [a, c], set b = c
+   - Jika f(c)·f(b) < 0, akar ada di [c, b], set a = c
+4. Ulangi langkah 2-3 sampai kriteria berhenti terpenuhi
+
+### Kriteria Berhenti
+
+- |f(c)| < ε (toleransi fungsi)
+- |b - a| < ε (toleransi interval)
+- Jumlah iterasi maksimum tercapai
+
+### Kelebihan & Kekurangan
+
+**Kelebihan:**
+- Selalu konvergen (jika interval awal valid)
+- Sederhana dan mudah diimplementasikan
+
+**Kekurangan:**
+- Konvergensi lambat (linear)
+- Membutuhkan interval awal yang mengandung akar
+    `,
+    examples: [
+      {
+        id: 'example-2-1',
+        title: 'Implementasi Metode Bisection',
+        description: 'Mencari akar persamaan f(x) = x³ - x - 2',
+        initialCode: `import numpy as np
+import matplotlib.pyplot as plt
+
+def f(x):
+    """Fungsi: f(x) = x³ - x - 2"""
+    return x**3 - x - 2
+
+def bisection(f, a, b, tol=1e-6, max_iter=100):
+    """
+    Metode Bisection untuk mencari akar f(x) = 0
+
+    Parameters:
+    -----------
+    f : fungsi
+        Fungsi yang akarnya dicari
+    a, b : float
+        Batas bawah dan atas interval awal
+    tol : float
+        Toleransi error
+    max_iter : int
+        Maksimum iterasi
+
+    Returns:
+    --------
+    x : float
+        Perkiraan akar
+    iterations : int
+        Jumlah iterasi yang dilakukan
+    """
+    if f(a) * f(b) >= 0:
+        print("Error: f(a) dan f(b) harus memiliki tanda berbeda!")
+        return None, 0
+
+    iterations = []
+    for i in range(max_iter):
+        c = (a + b) / 2  # Titik tengah
+        fc = f(c)
+
+        iterations.append({
+            'iter': i+1,
+            'a': a,
+            'b': b,
+            'c': c,
+            'f(c)': fc,
+            'interval': abs(b - a)
+        })
+
+        print(f"Iterasi {i+1}: a = {a:.6f}, b = {b:.6f}, c = {c:.6f}, f(c) = {fc:.6e}")
+
+        if abs(fc) < tol or abs(b - a) < tol:
+            return c, i + 1
+
+        if f(a) * fc < 0:
+            b = c
+        else:
+            a = c
+
+    return (a + b) / 2, max_iter
+
+# Cari akar f(x) = x³ - x - 2
+print("Mencari akar f(x) = x³ - x - 2 menggunakan Bisection\\n")
+akar, n_iter = bisection(f, 1, 2)
+print(f"\\nAkar ditemukan: x = {akar:.10f}")
+print(f"Jumlah iterasi: {n_iter}")
+print(f"Verifikasi: f({akar:.10f}) = {f(akar):.2e}")`,
+        expectedOutput: 'Akar ditemukan: x = 1.5213797089',
+      },
+      {
+        id: 'example-2-2',
+        title: 'Visualisasi Konvergensi Bisection',
+        description: 'Visualisasi bagaimana interval menyempit setiap iterasi',
+        initialCode: `import numpy as np
+import matplotlib.pyplot as plt
+
+def f(x):
+    return x**3 - x - 2
+
+def bisection_visual(f, a, b, tol=1e-6, max_iter=20):
+    intervals = []
+
+    for i in range(max_iter):
+        c = (a + b) / 2
+        intervals.append((a, b, c))
+
+        if abs(f(c)) < tol or abs(b - a) < tol:
+            break
+
+        if f(a) * f(c) < 0:
+            b = c
+        else:
+            a = c
+
+    return intervals
+
+# Jalankan bisection
+intervals = bisection_visual(f, 1, 2)
+
+# Visualisasi
+fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+axes = axes.flatten()
+x = np.linspace(0.5, 2.5, 100)
+
+# Plot fungsi dan iterasi
+for idx, (a, b, c) in enumerate(intervals[:6]):
+    ax = axes[idx]
+    ax.plot(x, f(x), 'b-', linewidth=2, label='f(x)')
+    ax.axhline(y=0, color='k', linestyle='--', alpha=0.5)
+
+    # Highlight interval
+    ax.axvspan(a, b, alpha=0.3, color='red', label='Interval')
+
+    # Plot titik tengah
+    ax.plot(c, f(c), 'ro', markersize=8, label=f'c = {c:.3f}')
+
+    ax.set_xlabel('x')
+    ax.set_ylabel('f(x)')
+    ax.set_title(f'Iterasi {idx + 1}: [{a:.3f}, {b:.3f}]')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()`,
+      },
+    ],
+  },
+  {
+    id: 'module-2-lesson-2',
+    moduleId: 'module-2',
+    title: 'Metode Newton-Raphson',
+    titleEn: 'Newton-Raphson Method',
+    order: 2,
+    objectives: [
+      'Memahami turunan metode Newton-Raphson',
+      'Menerapkan metode Newton-Raphson',
+      'Menganalisis konvergensi kuadratik',
+    ],
+    content: `
+## Metode Newton-Raphson
+
+Metode Newton-Raphson adalah metode terbuka (open method) yang menggunakan turunan fungsi untuk menghasilkan pendekatan yang lebih baik menuju akar.
+
+### Turunan Matematis
+
+Dari ekspansi deret Taylor di sekitar xᵢ:
+
+\`\`\`
+f(xᵢ₊₁) ≈ f(xᵢ) + f'(xᵢ)(xᵢ₊₁ - xᵢ)
+\`\`\`
+
+Jika xᵢ₊₁ adalah akar, maka f(xᵢ₊₁) = 0:
+
+\`\`\`
+0 ≈ f(xᵢ) + f'(xᵢ)(xᵢ₊₁ - xᵢ)
+xᵢ₊₁ ≈ xᵢ - f(xᵢ) / f'(xᵢ)
+\`\`\`
+
+### Algoritma
+
+1. Pilih tebakan awal x₀
+2. Hitung xᵢ₊₁ = xᵢ - f(xᵢ) / f'(xᵢ)
+3. Ulangi sampai |xᵢ₊₁ - xᵢ| < ε atau |f(xᵢ)| < ε
+
+### Kelebihan & Kekurangan
+
+**Kelebihan:**
+- Konvergensi sangat cepat (kuadratik)
+- Biasanya membutuhkan sedikit iterasi
+
+**Kekurangan:**
+- Membutuhkan turunan fungsi
+- Dapat divergen jika tebakan awal buruk
+- Tidak konvergen jika f'(x) ≈ 0
+
+### Galat Relatif
+
+\`\`\`
+εₐ = |(xᵢ₊₁ - xᵢ) / xᵢ₊₁| × 100%
+\`\`\`
+    `,
+    examples: [
+      {
+        id: 'example-2-3',
+        title: 'Implementasi Newton-Raphson',
+        description: 'Mencari akar dengan konvergensi cepat',
+        initialCode: `import numpy as np
+
+def f(x):
+    """Fungsi: f(x) = x³ - x - 2"""
+    return x**3 - x - 2
+
+def df(x):
+    """Turunan: f'(x) = 3x² - 1"""
+    return 3*x**2 - 1
+
+def newton_raphson(f, df, x0, tol=1e-6, max_iter=100):
+    """
+    Metode Newton-Raphson
+
+    Parameters:
+    -----------
+    f : fungsi
+        Fungsi yang akarnya dicari
+    df : fungsi
+        Turunan fungsi f
+    x0 : float
+        Tebakan awal
+    tol : float
+        Toleransi error
+    max_iter : int
+        Maksimum iterasi
+
+    Returns:
+    --------
+    x : float
+        Perkiraan akar
+    iterations : list
+        Riwayat iterasi
+    """
+    x = x0
+    iterations = []
+
+    for i in range(max_iter):
+        fx = f(x)
+        dfx = df(x)
+
+        # Cek pembagian dengan nol
+        if abs(dfx) < 1e-12:
+            print(f"Warning: Turunan mendekati nol pada iterasi {i+1}")
+            break
+
+        x_new = x - fx / dfx
+
+        # Hitung galat relatif
+        if x_new != 0:
+            error_abs = abs(x_new - x)
+            error_rel = abs((x_new - x) / x_new) * 100
+        else:
+            error_abs = abs(x_new - x)
+            error_rel = float('inf')
+
+        iterations.append({
+            'iter': i+1,
+            'x': x,
+            'f(x)': fx,
+            "f'(x)": dfx,
+            'x_new': x_new,
+            'ea': error_abs,
+            'er': error_rel
+        })
+
+        print(f"Iterasi {i+1}: x = {x:.10f}, f(x) = {fx:.6e}, εr = {error_rel:.4f}%")
+
+        # Cek konvergensi
+        if error_abs < tol or error_rel < tol/100:
+            print(f"\\nKonvergen pada iterasi {i+1}!")
+            return x_new, iterations
+
+        x = x_new
+
+    print(f"\\nTidak konvergen dalam {max_iter} iterasi")
+    return x, iterations
+
+# Cari akar dengan Newton-Raphson
+print("Mencari akar f(x) = x³ - x - 2 dengan Newton-Raphson\\n")
+akar, history = newton_raphson(f, df, x0=1.5)
+print(f"\\nAkar ditemukan: x = {akar:.10f}")
+print(f"Verifikasi: f({akar:.10f}) = {f(akar):.2e}")`,
+      },
+      {
+        id: 'example-2-4',
+        title: 'Perbandingan Bisection vs Newton-Raphson',
+        description: 'Membandingkan kecepatan konvergensi kedua metode',
+        initialCode: `import numpy as np
+import matplotlib.pyplot as plt
+
+def f(x):
+    return x**3 - x - 2
+
+def df(x):
+    return 3*x**2 - 1
+
+# Metode Bisection
+def bisection_simple(f, a, b, tol=1e-6, max_iter=100):
+    errors = []
+    for i in range(max_iter):
+        c = (a + b) / 2
+        errors.append(abs(f(c)))
+
+        if abs(f(c)) < tol or abs(b - a) < tol:
+            break
+
+        if f(a) * f(c) < 0:
+            b = c
+        else:
+            a = c
+    return errors
+
+# Metode Newton-Raphson
+def newton_simple(f, df, x0, tol=1e-6, max_iter=100):
+    errors = []
+    x = x0
+    for i in range(max_iter):
+        errors.append(abs(f(x)))
+        dfx = df(x)
+
+        if abs(dfx) < 1e-12:
+            break
+
+        x_new = x - f(x) / dfx
+        if abs(x_new - x) < tol:
+            break
+        x = x_new
+    return errors
+
+# Jalankan kedua metode
+bisect_errors = bisection_simple(f, 1, 2)
+newton_errors = newton_simple(f, df, 1.5)
+
+# Visualisasi perbandingan konvergensi
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+
+# Plot 1: Log scale untuk melihat perbedaan jelas
+ax1.semilogy(range(1, len(bisect_errors)+1), bisect_errors, 'b-o',
+             linewidth=2, markersize=6, label='Bisection')
+ax1.semilogy(range(1, len(newton_errors)+1), newton_errors, 'r-s',
+             linewidth=2, markersize=6, label='Newton-Raphson')
+ax1.set_xlabel('Iterasi')
+ax1.set_ylabel('|f(x)| (log scale)')
+ax1.set_title('Perbandingan Konvergensi (Log Scale)')
+ax1.legend()
+ax1.grid(True, alpha=0.3)
+
+# Plot 2: Linear scale
+ax2.plot(range(1, len(bisect_errors)+1), bisect_errors, 'b-o',
+         linewidth=2, markersize=6, label='Bisection')
+ax2.plot(range(1, len(newton_errors)+1), newton_errors, 'r-s',
+         linewidth=2, markersize=6, label='Newton-Raphson')
+ax2.set_xlabel('Iterasi')
+ax2.set_ylabel('|f(x)|')
+ax2.set_title('Perbandingan Konvergensi (Linear Scale)')
+ax2.legend()
+ax2.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+
+print(f"Bisection: {len(bisect_errors)} iterasi")
+print(f"Newton-Raphson: {len(newton_errors)} iterasi")`,
+      },
+    ],
+  },
+];
+
+// All modules
+export const modules: Module[] = [
+  {
+    id: 'module-1',
+    title: 'Pendahuluan & Analisis Galat',
+    titleEn: 'Introduction & Error Analysis',
+    description: 'Dasar metode numerik, representasi floating-point, dan analisis galat',
+    order: 1,
+    lessons: module1Lessons,
+    icon: '📊',
+  },
+  {
+    id: 'module-2',
+    title: 'Akar Persamaan',
+    titleEn: 'Roots of Equations',
+    description: 'Metode pencarian akar: Bisection, Regula Falsi, Newton-Raphson, Secant',
+    order: 2,
+    lessons: module2Lessons,
+    icon: '🎯',
+  },
+  {
+    id: 'module-3',
+    title: 'Sistem Persamaan Linear',
+    titleEn: 'Linear Systems',
+    description: 'Eliminasi Gauss, Dekomposisi LU, Jacobi, Gauss-Seidel',
+    order: 3,
+    lessons: module3Lessons,
+    icon: '🔢',
+  },
+  {
+    id: 'module-4',
+    title: 'Sistem Non-Linear',
+    titleEn: 'Non-Linear Systems',
+    description: 'Matriks Jacobian dan metode Newton-Raphson untuk sistem',
+    order: 4,
+    lessons: module4Lessons,
+    icon: '🔗',
+  },
+  {
+    id: 'module-5',
+    title: 'Optimasi Numerik',
+    titleEn: 'Numerical Optimization',
+    description: 'Golden Section Search dan aplikasi MPPT',
+    order: 5,
+    lessons: module5Lessons,
+    icon: '📈',
+  },
+  {
+    id: 'module-6',
+    title: 'Interpolasi',
+    titleEn: 'Interpolation',
+    description: 'Lagrange, Newton, dan Cubic Spline',
+    order: 6,
+    lessons: module6Lessons,
+    icon: '📉',
+  },
+  {
+    id: 'module-7',
+    title: 'Integrasi & Diferensiasi',
+    titleEn: 'Integration & Differentiation',
+    description: 'Metode numerik untuk kalkulus',
+    order: 7,
+    lessons: module7Lessons,
+    icon: '∫',
+  },
+  {
+    id: 'module-8',
+    title: 'Solusi PDB',
+    titleEn: 'ODE Solutions',
+    description: 'Metode Euler dan Runge-Kutta',
+    order: 8,
+    lessons: module8Lessons,
+    icon: '🔄',
+  },
+  {
+    id: 'module-9',
+    title: 'Project: Power Flow',
+    titleEn: 'Power Flow Project',
+    description: 'Simulasi aliran daya dengan Newton-Raphson',
+    order: 9,
+    lessons: module9Lessons,
+    icon: '⚡',
+  },
+];
+
+// Helper function to get all lessons
+export function getAllLessons(): Lesson[] {
+  return modules.flatMap(module => module.lessons);
+}
+
+// Helper function to get total lesson count
+export function getTotalLessonCount(): number {
+  return getAllLessons().length;
+}
+
+// Helper function to get lesson by ID
+export function getLessonById(id: string): Lesson | undefined {
+  return getAllLessons().find(lesson => lesson.id === id);
+}
+
+// Helper function to get module by ID
+export function getModuleById(id: string): Module | undefined {
+  return modules.find(module => module.id === id);
+}
