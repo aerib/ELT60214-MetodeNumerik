@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   title: "Metode Numerik - Interactive Learning System",
   description: "Platform pembelajaran interaktif untuk Metode Numerik dengan eksekusi Python langsung di browser. Course ELT60214 - Teknik Elektro UNY.",
   keywords: ["Metode Numerik", "Numerical Methods", "Python", "Pyodide", "Teknik Elektro", "ELT60214", "UNY", "Interactive Learning"],
-  authors: [{ name: "Z.ai Development Team" }],
+  authors: [{ name: "Aji Ery Burhandenny" }],
   openGraph: {
     title: "Metode Numerik - Interactive Learning System",
     description: "Platform pembelajaran interaktif untuk Metode Numerik",
