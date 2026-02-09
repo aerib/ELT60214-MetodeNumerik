@@ -284,7 +284,7 @@ export default function Home() {
               </ul>
               <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
                 <p className="text-sm text-slate-600 dark:text-slate-400 text-center">
-                  Dosen Pengampu: Dr.Eng. Ir. Aji Ery Burhandenny, ST., M.AIT.
+                  Dosen Pengampu: Dr.Eng. Ir. Aji Ery Burhandenny, ST., M.AIT. & Deny Budi Hertanto, M.Kom.
                 </p>
               </div>
             </CardContent>
